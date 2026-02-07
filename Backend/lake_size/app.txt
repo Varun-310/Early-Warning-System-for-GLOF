@@ -1,0 +1,94 @@
+import os
+import base64
+import numpy as np
+import cv2
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from skimage.filters import threshold_otsu
+from skimage.morphology import dilation, disk
+from skimage import measure
+import matplotlib.pyplot as plt
+
+app = Flask(__name__)
+CORS(app)  # Allow CORS for React frontend
+
+# Process a single image and return results
+def process_glacial_image(image_path, resolution=10):
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    lake_threshold = threshold_otsu(gray)
+    lake_mask = gray <= lake_threshold
+    ice_mask = gray > lake_threshold
+
+    lake_labeled = measure.label(lake_mask)
+    ice_labeled = measure.label(ice_mask)
+
+    def get_largest_region_size(labeled_image):
+        props = measure.regionprops(labeled_image)
+        return max([prop.area for prop in props]) if props else 0
+
+    lake_size_before = get_largest_region_size(lake_labeled) * (resolution ** 2)
+    ice_size_before = get_largest_region_size(ice_labeled) * (resolution ** 2)
+
+     # Convert pixel areas to square meters
+    lake_size_before_m2 = lake_size_before * (resolution ** 2)
+    ice_size_before_m2 = ice_size_before * (resolution ** 2)
+
+
+    dilated_lake = dilation(lake_mask, disk(5))
+    dilated_ice = dilation(ice_mask, disk(3))
+
+    lake_size_after = get_largest_region_size(measure.label(dilated_lake)) * (resolution ** 2)
+    ice_size_after = get_largest_region_size(measure.label(dilated_ice)) * (resolution ** 2)
+
+ # Convert new sizes to square meters
+    lake_size_after_m2 = lake_size_after * (resolution ** 2)
+    ice_size_after_m2 = ice_size_after * (resolution ** 2)
+
+    total_area = (image.shape[0] * image.shape[1]) * (resolution ** 2)
+    water_percentage = (lake_size_after / total_area) * 100 if total_area > 0 else 0
+    ice_change_percent = ((ice_size_after_m2 - ice_size_before_m2) / ice_size_before_m2) * 100 if ice_size_before_m2 > 0 else 0
+
+    ice_status = "No ice detected" if ice_size_after_m2 == 0 else f"{ice_size_after_m2:.2f} m²"
+
+    # Save visualizations for the frontend
+    processed_image_path = "processed_image.jpg"
+    plt.imshow(lake_mask, cmap="Blues")
+    plt.savefig(processed_image_path)
+    plt.close()
+
+    # Convert processed image to Base64
+    with open(processed_image_path, "rb") as f:
+        processed_image_base64 = base64.b64encode(f.read()).decode()
+
+    return {
+        "lake_size_before": lake_size_before,
+        "lake_size_after": lake_size_after,
+        "ice_size_before": ice_size_before,
+        "ice_size_after": ice_size_after,
+        "ice_size_after_m2": ice_size_after_m2,
+        "ice_size_before_m2": ice_size_before_m2,
+        "ice_change_percent": ice_change_percent,
+        "water_percentage": water_percentage,
+        "processed_image": processed_image_base64,
+        "ice_status": ice_status
+    }
+
+@app.route("/process", methods=["POST"])
+def process_images():
+    data = request.json
+    image_paths = data.get("image_paths", [])
+    results = {}
+
+    for image_path in image_paths:
+        if not os.path.exists(image_path):
+            results[image_path] = {"error": "File not found"}
+            continue
+
+        results[image_path] = process_glacial_image(image_path)
+
+    return jsonify(results)
+
+if __name__ == "__main__":
+    app.run(debug=True)

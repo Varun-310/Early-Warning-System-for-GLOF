@@ -1,0 +1,21 @@
+# Lake Size Analysis API - Dependencies
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-dotenv==1.0.0
+python-multipart==0.0.6
+
+# Image Processing
+opencv-python==4.9.0.80
+scikit-image==0.22.0
+numpy==1.26.3
+
+# Visualization
+matplotlib==3.8.2
+
+# Data
+pandas==2.1.4
+
+# Validation
+pydantic==2.5.3

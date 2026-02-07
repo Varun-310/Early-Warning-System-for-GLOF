@@ -1,0 +1,20 @@
+# GLOF Prediction API - Dependencies
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-dotenv==1.0.0
+
+# ML & Data
+xgboost==2.0.3
+pandas==2.1.4
+numpy==1.26.3
+
+# SMS Alerts
+twilio==8.10.0
+
+# Location Services
+geopy==2.4.1
+
+# CORS
+pydantic==2.5.3

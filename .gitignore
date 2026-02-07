@@ -1,0 +1,62 @@
+# Python virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+.env
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+
+# Build outputs
+*.log
+*.tmp
+*.temp
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Project specific
+*.pyc
+debug.log
+.env.local
+.env.*.local
+
+# Data folders (large training data)
+Backend/SAR/data/
+Backend/SAR/uploads/
+Backend/GLOF/data/
+
+# Large model files (>50MB) - download separately
+Backend/SAR/glof_cnn_model.h5
+
+# Large GeoTIFF files
+*.tif
+*.tiff
+
+# Jupyter
+.ipynb_checkpoints/

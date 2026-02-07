@@ -1,0 +1,42 @@
+# GLOF Monitoring System - Unified Backend Requirements
+# Install with: pip install -r requirements.txt
+
+# ========== Core Web Framework ==========
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-dotenv==1.0.0
+python-multipart==0.0.6
+pydantic==2.5.3
+
+# ========== HTTP Client (for Gateway) ==========
+httpx==0.26.0
+
+# ========== Machine Learning ==========
+xgboost==2.0.3
+tensorflow==2.15.0
+scikit-learn==1.4.0
+scikit-image==0.22.0
+
+# ========== Data Processing ==========
+numpy==1.26.3
+pandas==2.1.4
+scipy==1.12.0
+
+# ========== Image Processing ==========
+opencv-python==4.9.0.80
+Pillow==10.2.0
+
+# ========== GeoTIFF/DEM Processing ==========
+rasterio==1.3.9
+
+# ========== Visualization ==========
+matplotlib==3.8.2
+
+# ========== SMS Alerts (Twilio) ==========
+twilio==8.11.0
+
+# ========== Firebase ==========
+requests==2.31.0
+
+# ========== Geospatial ==========
+geopy==2.4.1
